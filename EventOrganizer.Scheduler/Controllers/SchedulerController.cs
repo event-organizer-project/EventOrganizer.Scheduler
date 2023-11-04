@@ -1,12 +1,14 @@
 using EventOrganizer.Scheduler.DataAccess;
 using EventOrganizer.Scheduler.DTO;
 using EventOrganizer.Scheduler.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Quartz;
 
 namespace EventOrganizer.Scheduler.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("[controller]")]
     public class SchedulerController : ControllerBase
     {
@@ -28,6 +30,11 @@ namespace EventOrganizer.Scheduler.Controllers
         public async Task<IActionResult> AddEventToSchedule(ScheduledEvent scheduledEvent)
         {
             var eventData = await eventRepository.GetDetailedEvent(scheduledEvent.EventId, scheduledEvent.UserId);
+
+            if (eventData == null)
+            {
+                return NotFound();
+            }
 
             var trigger = notificationTriggerFactory.CreateNotificationTrigger(eventData);
 

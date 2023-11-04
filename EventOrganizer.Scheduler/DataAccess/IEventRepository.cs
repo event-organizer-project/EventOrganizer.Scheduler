@@ -6,6 +6,6 @@ namespace EventOrganizer.Scheduler.DataAccess
     {
         Task<IList<DetailedEvent>> GetTodayDetailedEvents();
 
-        Task<DetailedEvent> GetDetailedEvent(int eventId, int userId);
+        Task<DetailedEvent?> GetDetailedEvent(int eventId, int userId);
     }
 }
