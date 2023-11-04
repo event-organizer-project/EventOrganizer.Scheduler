@@ -17,20 +17,17 @@ namespace EventOrganizer.Scheduler.DataAccess
             await using var sqlConnection = connectionFactory.CreateConnection();
 
             var response = await sqlConnection.QueryFirstOrDefaultAsync<DetailedEvent>(
-                @"SELECT e.Id AS EventId, e.Title, e.Description, e.OwnerId, u.FirstName, u.Email
+                @"SELECT e.Id AS EventId, e.Title, e.Description, e.StartTime,
+                      e.OwnerId AS UserId, u.FirstName AS UserName, u.Email AS UserEmail
                   FROM eventorganizer.eventmodels e
-                  JOIN eventorganizer.Users u ON e.OwnerId = u.Id
-                  WHERE e.Id = @EventId AND OwnerId = @UserId",
+                  JOIN eventorganizer.eventinvolvement ei ON ei.EventId = e.Id
+                  JOIN eventorganizer.Users u ON ei.UserId = u.Id
+                  WHERE DATE(e.StartDate) = CURDATE() AND e.Id = @EventId AND u.Id = @UserId",
                 new
                 {
                     EventId = eventId,
                     UserId = userId
                 });
-
-            if (response == null)
-            {
-                throw new Exception();
-            }
 
             return response;
         }
@@ -43,7 +40,8 @@ namespace EventOrganizer.Scheduler.DataAccess
                 @"SELECT e.Id AS EventId, e.Title, e.Description, e.StartTime,
                       e.OwnerId AS UserId, u.FirstName AS UserName, u.Email AS UserEmail
                   FROM eventorganizer.eventmodels e
-                  JOIN eventorganizer.Users u ON e.OwnerId = u.Id
+                  JOIN eventorganizer.eventinvolvement ei ON ei.EventId = e.Id
+                  JOIN eventorganizer.Users u ON ei.UserId = u.Id
                   WHERE DATE(e.StartDate) = CURDATE()");
 
             if (response == null)
