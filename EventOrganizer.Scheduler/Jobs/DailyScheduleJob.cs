@@ -24,7 +24,7 @@ namespace EventOrganizer.Scheduler.Jobs
 
         public async Task Execute(IJobExecutionContext context)
         {
-            var events = await eventRepository.GetTodayDetailedEvents();
+            var events = await eventRepository.GetTodayEventNotificationsData();
 
             var triggers = events.Select(x => notificationTriggerFactory.CreateNotificationTrigger(x));
 

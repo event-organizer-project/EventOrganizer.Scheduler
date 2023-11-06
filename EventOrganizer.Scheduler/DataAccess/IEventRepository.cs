@@ -4,8 +4,8 @@ namespace EventOrganizer.Scheduler.DataAccess
 {
     public interface IEventRepository
     {
-        Task<IList<DetailedEvent>> GetTodayDetailedEvents();
+        Task<IList<EventNotificationData>> GetTodayEventNotificationsData();
 
-        Task<DetailedEvent?> GetDetailedEvent(int eventId, int userId);
+        Task<IList<EventNotificationData>> GetEventNotificationsData(int eventId, int userId);
     }
 }

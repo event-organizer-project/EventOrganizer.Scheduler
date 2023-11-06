@@ -1,7 +1,7 @@
 ﻿namespace EventOrganizer.Scheduler.DTO
 {
     [Serializable]
-    public class DetailedEvent
+    public class EventNotificationData
     {
         public int EventId { get; set; }
 
@@ -11,10 +11,12 @@
 
         public TimeSpan StartTime { get; set; }
 
-        public int UserId { get; set; }
+        public int SubscriptionId { get; set; }
 
-        public string UserName { get; set; }
+        public string Endpoint { get; set; }
 
-        public string UserEmail { get; set; }
+        public string P256DH { get; set; }
+
+        public string Auth { get; set; }
     }
 }

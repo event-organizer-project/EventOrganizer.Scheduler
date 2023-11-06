@@ -3,6 +3,7 @@ using EventOrganizer.Scheduler.DTO;
 using EventOrganizer.Scheduler.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Diagnostics;
 using Quartz;
 
 namespace EventOrganizer.Scheduler.Controllers
@@ -29,16 +30,13 @@ namespace EventOrganizer.Scheduler.Controllers
         [HttpPost("add-event")]
         public async Task<IActionResult> AddEventToSchedule(ScheduledEvent scheduledEvent)
         {
-            var eventData = await eventRepository.GetDetailedEvent(scheduledEvent.EventId, scheduledEvent.UserId);
+            var eventNotifications = await eventRepository.GetEventNotificationsData(scheduledEvent.EventId, scheduledEvent.UserId);
 
-            if (eventData == null)
+            foreach (var eventNotification in eventNotifications)
             {
-                return NotFound();
+                var trigger = notificationTriggerFactory.CreateNotificationTrigger(eventNotification);
+                await scheduler.ScheduleJob(trigger);
             }
-
-            var trigger = notificationTriggerFactory.CreateNotificationTrigger(eventData);
-
-            await scheduler.ScheduleJob(trigger);
 
             return Ok();
         }

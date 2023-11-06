@@ -12,42 +12,37 @@ namespace EventOrganizer.Scheduler.DataAccess
             this.connectionFactory = connectionFactory;
         }
 
-        public async Task<DetailedEvent> GetDetailedEvent(int eventId, int userId)
+        public async Task<IList<EventNotificationData>> GetEventNotificationsData(int eventId, int userId)
         {
             await using var sqlConnection = connectionFactory.CreateConnection();
 
-            var response = await sqlConnection.QueryFirstOrDefaultAsync<DetailedEvent>(
+            var response = await sqlConnection.QueryAsync<EventNotificationData>(
                 @"SELECT e.Id AS EventId, e.Title, e.Description, e.StartTime,
-                      e.OwnerId AS UserId, u.FirstName AS UserName, u.Email AS UserEmail
+                      s.Id AS SubscriptionId, s.Endpoint AS Endpoint, s.P256DH AS P256DH, s.Auth AS Auth
                   FROM eventorganizer.eventmodels e
                   JOIN eventorganizer.eventinvolvement ei ON ei.EventId = e.Id
-                  JOIN eventorganizer.Users u ON ei.UserId = u.Id
-                  WHERE DATE(e.StartDate) = CURDATE() AND e.Id = @EventId AND u.Id = @UserId",
+                  JOIN eventorganizer.subscriptions s ON ei.UserId = s.UserId
+                  WHERE DATE(e.StartDate) = CURDATE() AND e.Id = @EventId AND ei.UserId = @UserId",
                 new
                 {
                     EventId = eventId,
                     UserId = userId
                 });
 
-            return response;
+            return response.ToList();
         }
 
-        public async Task<IList<DetailedEvent>> GetTodayDetailedEvents()
+        public async Task<IList<EventNotificationData>> GetTodayEventNotificationsData()
         {
             await using var sqlConnection = connectionFactory.CreateConnection();
 
-            var response = await sqlConnection.QueryAsync<DetailedEvent>(
+            var response = await sqlConnection.QueryAsync<EventNotificationData>(
                 @"SELECT e.Id AS EventId, e.Title, e.Description, e.StartTime,
-                      e.OwnerId AS UserId, u.FirstName AS UserName, u.Email AS UserEmail
+                      s.Id AS SubscriptionId, s.Endpoint AS Endpoint, s.P256DH AS P256DH, s.Auth AS Auth
                   FROM eventorganizer.eventmodels e
                   JOIN eventorganizer.eventinvolvement ei ON ei.EventId = e.Id
-                  JOIN eventorganizer.Users u ON ei.UserId = u.Id
+                  JOIN eventorganizer.subscriptions s ON ei.UserId = s.UserId
                   WHERE DATE(e.StartDate) = CURDATE()");
-
-            if (response == null)
-            {
-                throw new Exception();
-            }
 
             return response.ToList();
         }

@@ -7,10 +7,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddQuartzSchedule();
 
-builder.Services.AddTransient<INotificationService, NotificationServiceMock>();
+builder.Services.AddPushNotificationService(builder.Configuration);
+
 builder.Services.AddTransient<IEventRepository, EventRepository>();
 builder.Services.AddTransient<ISqlConnectionFactory, MySqlConnectionFactory>();
 builder.Services.AddTransient<INotificationTriggerFactory, DoubleNotificationTriggerFactory>();
+builder.Services.AddTransient<IPushMessageFactory, PushMessageFactory>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

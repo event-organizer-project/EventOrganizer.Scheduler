@@ -8,17 +8,17 @@ namespace EventOrganizer.Scheduler.Services
     {
         private const int minutesBetweenRepetitions = 2;
 
-        public ITrigger CreateNotificationTrigger(DetailedEvent detailedEvent)
+        public ITrigger CreateNotificationTrigger(EventNotificationData eventNotificationData)
         {
             var jobDataMap = new JobDataMap
             {
-                [nameof(DetailedEvent)] = detailedEvent
+                [nameof(EventNotificationData)] = eventNotificationData
             };
 
-            var startAt = detailedEvent.StartTime.Subtract(TimeSpan.FromMinutes(minutesBetweenRepetitions));
+            var startAt = eventNotificationData.StartTime.Subtract(TimeSpan.FromMinutes(minutesBetweenRepetitions));
             var triggerTime = DateTime.Today.Add(startAt);
 
-            var identityName = $"notification-{detailedEvent.EventId}-{detailedEvent.UserId}";
+            var identityName = $"notification-{eventNotificationData.EventId}-{eventNotificationData.SubscriptionId}";
 
             var trigger = TriggerBuilder.Create()
                 .WithIdentity(identityName, "trigger")
