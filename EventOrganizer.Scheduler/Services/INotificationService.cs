@@ -4,6 +4,6 @@ namespace EventOrganizer.Scheduler.Services
 {
     public interface INotificationService
     {
-        Task Notify(DetailedEvent scheduledEvent);
+        Task Notify(EventNotificationData eventNotificationData);
     }
 }

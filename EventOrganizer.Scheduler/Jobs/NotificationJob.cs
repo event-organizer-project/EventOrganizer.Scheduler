@@ -6,7 +6,7 @@ namespace EventOrganizer.Scheduler.Jobs
 {
     public class NotificationJob : IJob
     {
-        public static readonly JobKey Key = new JobKey("notification", "job");
+        public static readonly JobKey Key = new("notification", "job");
 
         private readonly INotificationService notificationService;
 
@@ -18,9 +18,9 @@ namespace EventOrganizer.Scheduler.Jobs
         public async Task Execute(IJobExecutionContext context)
         {
             var dataMap = context.MergedJobDataMap;
-            var detatiledEvent = (DetailedEvent)dataMap[nameof(DetailedEvent)];
+            var eventNotificationData = (EventNotificationData)dataMap[nameof(EventNotificationData)];
 
-            await notificationService.Notify(detatiledEvent);
+            await notificationService.Notify(eventNotificationData);
         }
     }
 }

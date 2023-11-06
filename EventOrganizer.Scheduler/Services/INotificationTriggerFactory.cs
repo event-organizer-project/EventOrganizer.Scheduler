@@ -5,6 +5,6 @@ namespace EventOrganizer.Scheduler.Services
 {
     public interface INotificationTriggerFactory
     {
-        ITrigger CreateNotificationTrigger(DetailedEvent detailedEvent);
+        ITrigger CreateNotificationTrigger(EventNotificationData eventNotificationData);
     }
 }
