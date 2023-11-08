@@ -1,4 +1,5 @@
 ﻿using EventOrganizer.Scheduler.DTO;
+using EventOrganizer.Scheduler.Helpers;
 using EventOrganizer.Scheduler.Jobs;
 using Quartz;
 
@@ -18,10 +19,10 @@ namespace EventOrganizer.Scheduler.Services
             var startAt = eventNotificationData.StartTime.Subtract(TimeSpan.FromMinutes(minutesBetweenRepetitions));
             var triggerTime = DateTime.Today.Add(startAt);
 
-            var identityName = $"notification-{eventNotificationData.EventId}-{eventNotificationData.SubscriptionId}";
+            var identity = TriggerKeyCreationHelper.CreateNotificationTriggerKey(eventNotificationData);
 
             var trigger = TriggerBuilder.Create()
-                .WithIdentity(identityName, "trigger")
+                .WithIdentity(identity)
                 .ForJob(NotificationJob.Key)
                 .UsingJobData(jobDataMap)
                 .StartAt(triggerTime)

@@ -7,5 +7,7 @@ namespace EventOrganizer.Scheduler.DataAccess
         Task<IList<EventNotificationData>> GetTodayEventNotificationsData();
 
         Task<IList<EventNotificationData>> GetEventNotificationsData(int eventId, int userId);
+
+        Task<IList<int>> GetSubscriptionIdsByUserId(int userId);
     }
 }
