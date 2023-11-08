@@ -2,6 +2,7 @@
 using Quartz;
 using EventOrganizer.Scheduler.DTO;
 using EventOrganizer.Scheduler.Services;
+using System.Configuration;
 
 namespace EventOrganizer.Scheduler
 {
@@ -27,7 +28,7 @@ namespace EventOrganizer.Scheduler
         public static IServiceCollection AddPushNotificationService(this IServiceCollection services, IConfiguration configuration)
         {
             var pushOptions = configuration.GetSection(nameof(PushServiceOptions)).Get<PushServiceOptions>()
-                ?? throw new ArgumentNullException(nameof(PushServiceOptions));
+                ?? throw new ConfigurationErrorsException($"Section {nameof(PushServiceOptions)} not configured");
 
             services.AddMemoryCache();
             services.AddMemoryVapidTokenCache();

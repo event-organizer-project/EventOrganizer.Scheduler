@@ -1,9 +1,8 @@
 using EventOrganizer.Scheduler.DataAccess;
-using EventOrganizer.Scheduler.DTO;
+using EventOrganizer.Scheduler.Helpers;
 using EventOrganizer.Scheduler.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Diagnostics;
 using Quartz;
 
 namespace EventOrganizer.Scheduler.Controllers
@@ -27,10 +26,16 @@ namespace EventOrganizer.Scheduler.Controllers
             this.notificationTriggerFactory = notificationTriggerFactory;
         }
 
-        [HttpPost("add-event")]
-        public async Task<IActionResult> AddEventToSchedule(ScheduledEvent scheduledEvent)
+        /// <summary>
+        /// Schedule event notification for user by ids.
+        /// </summary>
+        /// <param name="eId">Event identifier</param>
+        /// <param name="eId">User identifier</param>
+        /// <returns></returns>
+        [HttpPost("{eId}/{uId}")]
+        public async Task<IActionResult> AddEventToSchedule(int eId, int uId)
         {
-            var eventNotifications = await eventRepository.GetEventNotificationsData(scheduledEvent.EventId, scheduledEvent.UserId);
+            var eventNotifications = await eventRepository.GetEventNotificationsData(eId, uId);
 
             foreach (var eventNotification in eventNotifications)
             {
@@ -41,10 +46,22 @@ namespace EventOrganizer.Scheduler.Controllers
             return Ok();
         }
 
-        [HttpDelete("remove-event")]
-        public IActionResult RemoveEventFromSchedule(ScheduledEvent scheduledEvent)
+        /// <summary>
+        /// Unchedule event notification for user by ids.
+        /// </summary>
+        /// <param name="eId">Event identifier</param>
+        /// <param name="eId">User identifier</param>
+        /// <returns></returns>
+        [HttpDelete("{eId}/{uId}")]
+        public async Task<IActionResult> RemoveEventFromSchedule(int eId, int uId)
         {
-            // RemoveEventFromSchedule
+            var subscriptionIds = await eventRepository.GetSubscriptionIdsByUserId(uId);
+
+            foreach (var sId in subscriptionIds)
+            {
+                var triggerKey = TriggerKeyCreationHelper.CreateNotificationTriggerKey(eId, sId);
+                await scheduler.UnscheduleJob(triggerKey);
+            }
 
             return Ok();
         }
