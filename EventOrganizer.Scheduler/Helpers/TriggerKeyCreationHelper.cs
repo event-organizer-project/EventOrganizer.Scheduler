@@ -7,6 +7,9 @@ namespace EventOrganizer.Scheduler.Helpers
     {
         public static TriggerKey CreateNotificationTriggerKey(EventNotificationData eventNotificationData)
         {
+            if (eventNotificationData == null)
+                throw new ArgumentNullException(nameof(eventNotificationData));
+
             return CreateNotificationTriggerKey(eventNotificationData.EventId, eventNotificationData.SubscriptionId);
         }
 
