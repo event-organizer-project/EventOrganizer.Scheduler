@@ -1,0 +1,28 @@
+name: master
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Build
+    uses: event-organizer-project/event-organizer-infrastructure/.github/workflows/dotnet_build.yml@master
+
+  test:
+    name: Test
+    needs: build
+    uses: event-organizer-project/event-organizer-infrastructure/.github/workflows/dotnet_test.yml@master
+    
+  build_docker:
+    name: Build & Push Docker Image
+    needs: test
+    uses: event-organizer-project/event-organizer-infrastructure/.github/workflows/docker_build_push.yml@master
+    with:
+      dockerfile_path: ./EventOrganizer.Scheduler/Dockerfile
+      docker_repository_name: eo-scheduler
+      push: true
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
