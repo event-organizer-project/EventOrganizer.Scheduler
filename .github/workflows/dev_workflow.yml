@@ -22,7 +22,7 @@ jobs:
     needs: test
     uses: event-organizer-project/event-organizer-infrastructure/.github/workflows/docker_build_push.yml@master
     with:
-      dockerfile_path: ./EventOrganizer.Scheduler/Dockerfile
+      dockerfile_path: ./Dockerfile
       docker_repository_name: eo-scheduler
     secrets:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
