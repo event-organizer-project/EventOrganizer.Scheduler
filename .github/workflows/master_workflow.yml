@@ -20,9 +20,20 @@ jobs:
     needs: test
     uses: event-organizer-project/event-organizer-infrastructure/.github/workflows/docker_build_push.yml@master
     with:
-      dockerfile_path: ./EventOrganizer.Scheduler/Dockerfile
+      dockerfile_path: ./Dockerfile
       docker_repository_name: eo-scheduler
       push: true
     secrets:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+
+  aws_eb_push:
+    name: Push to AWS EB
+    needs: build_docker
+    uses: event-organizer-project/event-organizer-infrastructure/.github/workflows/aws_eb_push.yml@master
+    with:
+      application_name: event-organizer
+      environment_name: eo-scheduler
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

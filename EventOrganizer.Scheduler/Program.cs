@@ -27,17 +27,22 @@ builder.Services.AddAuthentication("Bearer")
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.Use(async (context, next) => 
+{
+    if (context.Request.Path == "/" || !context.Request.Path.HasValue)
+        await context.Response.WriteAsync("Event Organizer Scheduler Service has started.");
+    else
+        await next.Invoke();
+});
 
 app.Run();
