@@ -8,7 +8,6 @@ using Quartz;
 namespace EventOrganizer.Scheduler.Controllers
 {
     [ApiController]
-    [Authorize]
     [Route("[controller]")]
     public class SchedulerController : ControllerBase
     {
@@ -18,12 +17,15 @@ namespace EventOrganizer.Scheduler.Controllers
 
         private readonly INotificationTriggerFactory notificationTriggerFactory;
 
+        private readonly ILogger<SchedulerController> logger;
+
         public SchedulerController(ISchedulerFactory schedulerFactory, IEventRepository eventRepository,
-            INotificationTriggerFactory notificationTriggerFactory)
+            INotificationTriggerFactory notificationTriggerFactory, ILogger<SchedulerController> logger)
         {
             scheduler = schedulerFactory.GetScheduler().Result;
             this.eventRepository = eventRepository;
             this.notificationTriggerFactory = notificationTriggerFactory;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -35,6 +37,8 @@ namespace EventOrganizer.Scheduler.Controllers
         [HttpPost("{eId}/{uId}")]
         public async Task<IActionResult> AddEventToSchedule(int eId, int uId)
         {
+            logger.LogInformation($"Execute AddEventToSchedule(int eId={eId}, int uId={uId})");
+
             var eventNotifications = await eventRepository.GetEventNotificationsData(eId, uId);
 
             foreach (var eventNotification in eventNotifications)
