@@ -10,6 +10,7 @@ builder.Services.AddQuartzSchedule();
 builder.Services.AddPushNotificationService(builder.Configuration);
 
 builder.Services.AddTransient<IEventRepository, EventRepository>();
+builder.Services.AddTransient<ILogRepository, LogRepository>();
 builder.Services.AddTransient<ISqlConnectionFactory, MySqlConnectionFactory>();
 builder.Services.AddTransient<INotificationTriggerFactory, DoubleNotificationTriggerFactory>();
 builder.Services.AddTransient<IPushMessageFactory, PushMessageFactory>();
@@ -24,6 +25,8 @@ builder.Services.AddAuthentication("Bearer")
         options.ApiName = "scheduler_api";
         options.Authority = builder.Configuration["Authority"];
     });
+
+builder.Services.AddSingleton<ILoggerProvider, CustomLoggerProvider>();
 
 var app = builder.Build();
 
