@@ -1,6 +1,5 @@
 ﻿using Dapper;
 using EventOrganizer.Scheduler.DTO;
-using MySqlConnector;
 
 namespace EventOrganizer.Scheduler.DataAccess
 {
