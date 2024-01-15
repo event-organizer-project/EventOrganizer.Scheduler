@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using EventOrganizer.Scheduler.DTO;
+using MySqlConnector;
 
 namespace EventOrganizer.Scheduler.DataAccess
 {
@@ -55,6 +56,18 @@ namespace EventOrganizer.Scheduler.DataAccess
                 @"SELECT s.Id FROM eventorganizer.subscriptions s
                   WHERE s.UserId = @UserId",
                 new { UserId = userId });
+
+            return response.ToList();
+        }
+
+        public async Task<IList<int>> GetSubscriptionIdsByUserIds(int[] userIds)
+        {
+            await using var sqlConnection = connectionFactory.CreateConnection();
+
+            var response = await sqlConnection.QueryAsync<int>(
+                @"SELECT s.Id FROM eventorganizer.subscriptions s
+                  WHERE s.UserId IN (@UserIds)",
+                new { UserIds = string.Join(',', userIds) });
 
             return response.ToList();
         }

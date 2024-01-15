@@ -7,6 +7,7 @@ using Quartz;
 
 namespace EventOrganizer.Scheduler.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class SchedulerController : ControllerBase
@@ -22,10 +23,10 @@ namespace EventOrganizer.Scheduler.Controllers
         public SchedulerController(ISchedulerFactory schedulerFactory, IEventRepository eventRepository,
             INotificationTriggerFactory notificationTriggerFactory, ILogger<SchedulerController> logger)
         {
-            scheduler = schedulerFactory.GetScheduler().Result;
-            this.eventRepository = eventRepository;
-            this.notificationTriggerFactory = notificationTriggerFactory;
-            this.logger = logger;
+            scheduler = schedulerFactory?.GetScheduler()?.Result ?? throw new ArgumentNullException(nameof(schedulerFactory));
+            this.eventRepository = eventRepository ?? throw new ArgumentNullException(nameof(eventRepository));
+            this.notificationTriggerFactory = notificationTriggerFactory ?? throw new ArgumentNullException(nameof(notificationTriggerFactory));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         /// <summary>
@@ -54,12 +55,14 @@ namespace EventOrganizer.Scheduler.Controllers
         /// Unchedule event notification for user by ids.
         /// </summary>
         /// <param name="eId">Event identifier</param>
-        /// <param name="eId">User identifier</param>
+        /// <param name="uIds">User identifiers</param>
         /// <returns></returns>
-        [HttpDelete("{eId}/{uId}")]
-        public async Task<IActionResult> RemoveEventFromSchedule(int eId, int uId)
+        [HttpDelete("{eId}/{uIds}")]
+        public async Task<IActionResult> RemoveEventFromSchedule(int eId, string uIds)
         {
-            var subscriptionIds = await eventRepository.GetSubscriptionIdsByUserId(uId);
+            var userIds = uIds.Split(',').Select(x => int.Parse(x));
+
+            var subscriptionIds = await eventRepository.GetSubscriptionIdsByUserId(userIds.First());
 
             foreach (var sId in subscriptionIds)
             {
