@@ -60,9 +60,9 @@ namespace EventOrganizer.Scheduler.Controllers
         [HttpDelete("{eId}/{uIds}")]
         public async Task<IActionResult> RemoveEventFromSchedule(int eId, string uIds)
         {
-            var userIds = uIds.Split(',').Select(x => int.Parse(x));
+            var userIds = uIds.Split(',').Select(x => int.Parse(x)).ToArray();
 
-            var subscriptionIds = await eventRepository.GetSubscriptionIdsByUserId(userIds.First());
+            var subscriptionIds = await eventRepository.GetSubscriptionIdsByUserIds(userIds);
 
             foreach (var sId in subscriptionIds)
             {

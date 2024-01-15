@@ -47,26 +47,14 @@ namespace EventOrganizer.Scheduler.DataAccess
             return response.ToList();
         }
 
-        public async Task<IList<int>> GetSubscriptionIdsByUserId(int userId)
-        {
-            await using var sqlConnection = connectionFactory.CreateConnection();
-
-            var response = await sqlConnection.QueryAsync<int>(
-                @"SELECT s.Id FROM eventorganizer.subscriptions s
-                  WHERE s.UserId = @UserId",
-                new { UserId = userId });
-
-            return response.ToList();
-        }
-
         public async Task<IList<int>> GetSubscriptionIdsByUserIds(int[] userIds)
         {
             await using var sqlConnection = connectionFactory.CreateConnection();
 
             var response = await sqlConnection.QueryAsync<int>(
                 @"SELECT s.Id FROM eventorganizer.subscriptions s
-                  WHERE s.UserId IN (@UserIds)",
-                new { UserIds = string.Join(',', userIds) });
+                  WHERE s.UserId IN @UserIds",
+                new { UserIds = userIds });
 
             return response.ToList();
         }
