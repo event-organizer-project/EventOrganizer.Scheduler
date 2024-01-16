@@ -1,20 +1,33 @@
 using EventOrganizer.Scheduler;
 using EventOrganizer.Scheduler.DataAccess;
 using EventOrganizer.Scheduler.Services;
-using Microsoft.AspNetCore.Server.Kestrel.Https;
+using IdentityServer4.AccessTokenValidation;
 using System.Security.Cryptography.X509Certificates;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-if (builder.Environment.IsDevelopment())
+if (builder.Configuration.GetValue<bool>("UseCustomSslCertificates"))
 {
+    var certs = new Dictionary<string, X509Certificate2>(StringComparer.OrdinalIgnoreCase)
+    {
+        ["localhost"] = new X509Certificate2("/app/certificates/localhost.pfx", "password"),
+        ["host.docker.internal"] = new X509Certificate2("/app/certificates/host.docker.internal.pfx", "password")
+    };
+
+    using (var store = new X509Store(StoreName.Root, StoreLocation.CurrentUser))
+    {
+        store.Open(OpenFlags.ReadWrite);
+
+        store.Add(certs["localhost"]);
+        store.Add(certs["host.docker.internal"]);
+    }
+
     builder.WebHost.ConfigureKestrel(options =>
         options.ConfigureHttpsDefaults(opt =>
         {
             opt.SslProtocols = System.Security.Authentication.SslProtocols.Tls12;
-            opt.ClientCertificateMode = ClientCertificateMode.AllowCertificate;
-            opt.ServerCertificate = new X509Certificate2("aspnetapp.pfx", "password");
+            opt.ServerCertificateSelector = (connectionContext, name) =>
+                name == "host.docker.internal" ? certs["host.docker.internal"] : certs["localhost"]; ;
         }));
 }
 
@@ -32,8 +45,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddAuthentication("Bearer")
-    .AddIdentityServerAuthentication("Bearer", options =>
+builder.Services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
+    .AddIdentityServerAuthentication(options =>
     {
         options.ApiName = "scheduler_api";
         options.Authority = builder.Configuration["Authority"];
