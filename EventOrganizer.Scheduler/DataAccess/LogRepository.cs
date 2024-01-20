@@ -16,7 +16,7 @@ namespace EventOrganizer.Scheduler.DataAccess
             await using var sqlConnection = connectionFactory.CreateConnection();
 
             var response = sqlConnection.Execute(
-            @"INSERT INTO eventorganizer.logrecords(LogLevel, StackTrace, Message, ExceptionMessage, AdditionalInfo, CallerName, CreatedAt, Application)
+            @"INSERT INTO EventOrganizer.LogRecords(LogLevel, StackTrace, Message, ExceptionMessage, AdditionalInfo, CallerName, CreatedAt, Application)
                    VALUES(@LogLevel, @StackTrace, @Message, @ExceptionMessage, @AdditionalInfo, @CallerName, @CreatedAt, @Application)",
             logRecord);
         }

@@ -19,9 +19,9 @@ namespace EventOrganizer.Scheduler.DataAccess
             var response = await sqlConnection.QueryAsync<EventNotificationData>(
                 @"SELECT e.Id AS EventId, e.Title, e.Description, e.StartTime,
                       s.Id AS SubscriptionId, s.Endpoint AS Endpoint, s.P256DH AS P256DH, s.Auth AS Auth
-                  FROM eventorganizer.eventmodels e
-                  JOIN eventorganizer.eventinvolvement ei ON ei.EventId = e.Id
-                  JOIN eventorganizer.subscriptions s ON ei.UserId = s.UserId
+                  FROM EventOrganizer.EventModels e
+                  JOIN EventOrganizer.EventInvolvement ei ON ei.EventId = e.Id
+                  JOIN EventOrganizer.Subscriptions s ON ei.UserId = s.UserId
                   WHERE DATE(e.StartDate) = CURDATE() AND e.Id = @EventId AND ei.UserId = @UserId",
                 new
                 {
@@ -39,9 +39,9 @@ namespace EventOrganizer.Scheduler.DataAccess
             var response = await sqlConnection.QueryAsync<EventNotificationData>(
                 @"SELECT e.Id AS EventId, e.Title, e.Description, e.StartTime,
                       s.Id AS SubscriptionId, s.Endpoint AS Endpoint, s.P256DH AS P256DH, s.Auth AS Auth
-                  FROM eventorganizer.eventmodels e
-                  JOIN eventorganizer.eventinvolvement ei ON ei.EventId = e.Id
-                  JOIN eventorganizer.subscriptions s ON ei.UserId = s.UserId
+                  FROM EventOrganizer.EventModels e
+                  JOIN EventOrganizer.EventInvolvement ei ON ei.EventId = e.Id
+                  JOIN EventOrganizer.Subscriptions s ON ei.UserId = s.UserId
                   WHERE DATE(e.StartDate) = CURDATE()");
 
             return response.ToList();
@@ -52,7 +52,7 @@ namespace EventOrganizer.Scheduler.DataAccess
             await using var sqlConnection = connectionFactory.CreateConnection();
 
             var response = await sqlConnection.QueryAsync<int>(
-                @"SELECT s.Id FROM eventorganizer.subscriptions s
+                @"SELECT s.Id FROM EventOrganizer.Subscriptions s
                   WHERE s.UserId IN @UserIds",
                 new { UserIds = userIds });
 
