@@ -18,8 +18,7 @@ namespace EventOrganizer.Scheduler
                 q.AddTrigger(opts => opts
                     .ForJob(DailyScheduleJob.Key)
                     .WithIdentity("DailyScheduleJob-trigger")
-                    /*.WithCronSchedule("0/5 * * * * ?")*/); // run every 5 seconds
-
+                    .WithCronSchedule("0 0 0 ? * * *")); // run every day at 00
             });
 
             services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
