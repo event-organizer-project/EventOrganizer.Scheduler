@@ -9,7 +9,7 @@
 
         public string Description { get; set; }
 
-        public TimeSpan StartTime { get; set; }
+        public DateTime StartDate { get; set; }
 
         public int SubscriptionId { get; set; }
 

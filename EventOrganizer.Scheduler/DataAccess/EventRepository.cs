@@ -17,16 +17,18 @@ namespace EventOrganizer.Scheduler.DataAccess
             await using var sqlConnection = connectionFactory.CreateConnection();
 
             var response = await sqlConnection.QueryAsync<EventNotificationData>(
-                @"SELECT e.Id AS EventId, e.Title, e.Description, e.StartTime,
+                @"SELECT e.Id AS EventId, e.Title, e.Description, e.StartDate,
                       s.Id AS SubscriptionId, s.Endpoint AS Endpoint, s.P256DH AS P256DH, s.Auth AS Auth
                   FROM EventOrganizer.EventModels e
                   JOIN EventOrganizer.EventInvolvement ei ON ei.EventId = e.Id
                   JOIN EventOrganizer.Subscriptions s ON ei.UserId = s.UserId
-                  WHERE DATE(e.StartDate) = CURDATE() AND e.Id = @EventId AND ei.UserId = @UserId",
+                  WHERE e.Id = @EventId AND ei.UserId = @UserId AND e.StartDate BETWEEN @CurrentTime AND @EndTime;",
                 new
                 {
                     EventId = eventId,
-                    UserId = userId
+                    UserId = userId,
+                    CurrentTime = DateTimeOffset.UtcNow,
+                    EndTime = DateTimeOffset.UtcNow.Date.AddDays(1),
                 });
 
             return response.ToList();
@@ -37,12 +39,17 @@ namespace EventOrganizer.Scheduler.DataAccess
             await using var sqlConnection = connectionFactory.CreateConnection();
 
             var response = await sqlConnection.QueryAsync<EventNotificationData>(
-                @"SELECT e.Id AS EventId, e.Title, e.Description, e.StartTime,
+                @"SELECT e.Id AS EventId, e.Title, e.Description, e.StartDate,
                       s.Id AS SubscriptionId, s.Endpoint AS Endpoint, s.P256DH AS P256DH, s.Auth AS Auth
                   FROM EventOrganizer.EventModels e
                   JOIN EventOrganizer.EventInvolvement ei ON ei.EventId = e.Id
                   JOIN EventOrganizer.Subscriptions s ON ei.UserId = s.UserId
-                  WHERE DATE(e.StartDate) = CURDATE()");
+                  WHERE e.StartDate BETWEEN @CurrentTime AND @EndTime;",
+                new
+                {
+                    CurrentTime = DateTimeOffset.UtcNow,
+                    EndTime = DateTimeOffset.UtcNow.Date.AddDays(1),
+                });
 
             return response.ToList();
         }

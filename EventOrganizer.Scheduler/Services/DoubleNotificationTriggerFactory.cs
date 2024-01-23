@@ -16,8 +16,8 @@ namespace EventOrganizer.Scheduler.Services
                 [nameof(EventNotificationData)] = eventNotificationData
             };
 
-            var startAt = eventNotificationData.StartTime.Subtract(TimeSpan.FromMinutes(minutesBetweenRepetitions));
-            var triggerTime = DateTime.Today.Add(startAt);
+            var startAt = eventNotificationData.StartDate.Subtract(TimeSpan.FromMinutes(minutesBetweenRepetitions))
+                .ToLocalTime();
 
             var identity = TriggerKeyCreationHelper.CreateNotificationTriggerKey(eventNotificationData);
 
@@ -25,7 +25,7 @@ namespace EventOrganizer.Scheduler.Services
                 .WithIdentity(identity)
                 .ForJob(NotificationJob.Key)
                 .UsingJobData(jobDataMap)
-                .StartAt(triggerTime)
+                .StartAt(startAt)
                 .WithSimpleSchedule(o =>
                 {
                     o.WithRepeatCount(1)
