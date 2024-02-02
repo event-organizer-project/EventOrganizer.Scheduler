@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using EventOrganizer.Utils.Logging;
 
 namespace EventOrganizer.Scheduler.DataAccess
 {

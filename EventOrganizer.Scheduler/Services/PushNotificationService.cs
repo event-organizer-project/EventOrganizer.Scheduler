@@ -9,10 +9,14 @@ namespace EventOrganizer.Scheduler.Services
 
         private readonly IPushMessageFactory pushMessageFactory;
 
-        public PushNotificationService(PushServiceClient pushServiceClient, IPushMessageFactory pushMessageFactory)
+        private readonly ILogger<PushNotificationService> logger;
+
+        public PushNotificationService(PushServiceClient pushServiceClient, IPushMessageFactory pushMessageFactory,
+            ILogger<PushNotificationService> logger)
         {
             this.pushServiceClient = pushServiceClient ?? throw new ArgumentNullException(nameof(pushServiceClient));
             this.pushMessageFactory = pushMessageFactory ?? throw new ArgumentNullException(nameof(pushMessageFactory));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task Notify(EventNotificationData eventNotificationData)
@@ -24,9 +28,9 @@ namespace EventOrganizer.Scheduler.Services
             {
                 await pushServiceClient.RequestPushMessageDeliveryAsync(subscription, message);
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                // TO DO: add exception handling
+                logger.LogError(exception, exception?.Message);
             }
         }
 
