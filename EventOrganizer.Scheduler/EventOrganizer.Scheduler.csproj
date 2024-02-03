@@ -4,12 +4,13 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>5a7dac58-87fa-4053-974a-ffb64c1725ed</UserSecretsId>
+    <UserSecretsId>4d953bf4-d186-44c6-a1af-03b85a95feac</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.15" />
+    <PackageReference Include="EventOrganizer.Utils" Version="1.0.0" />
     <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="3.0.1" />
     <PackageReference Include="Lib.AspNetCore.WebPush" Version="2.2.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
